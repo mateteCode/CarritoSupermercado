@@ -25,7 +25,8 @@ public class Carrito {
     @ManyToOne(optional = false, cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
     @JoinColumn(name="ID_CLIENTE", nullable = false)
     private Cliente cliente;
-    //@OneToMany
+
+    //@OneToMany()
     //private Set<Pedido> pedidos;
 
     public Carrito(LocalDate fecha) {

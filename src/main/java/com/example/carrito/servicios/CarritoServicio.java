@@ -1,6 +1,7 @@
 package com.example.carrito.servicios;
 
 import com.example.carrito.dto.CarritoDto;
+import com.example.carrito.dto.PedidoDtoCarrito;
 import com.example.carrito.dto.RespCarritoDto;
 import com.example.carrito.entidades.Carrito;
 import com.example.carrito.repositorios.ICarritoRepositorio;
@@ -16,6 +17,9 @@ import java.util.Optional;
 public class CarritoServicio implements ICarritoServicio{
     @Autowired
     private ICarritoRepositorio carritoRepositorio;
+
+    @Autowired
+    private IPedidoServicio pedidoServicio;
 
     @Override
     public RespCarritoDto agregar(CarritoDto carritoDto) {
@@ -52,7 +56,16 @@ public class CarritoServicio implements ICarritoServicio{
         ModelMapper mapper = new ModelMapper();
         List<Carrito> carritos = carritoRepositorio.findAll();
         List<CarritoDto> carritosDto = new ArrayList<>();
-        carritos.stream().forEach(c-> carritosDto.add(mapper.map(c, CarritoDto.class)));
+        carritos.stream().forEach(carrito-> {
+            CarritoDto carritoDto = mapper.map(carrito, CarritoDto.class);
+            List<PedidoDtoCarrito> pedidos = pedidoServicio.listarPorCarrito(carrito);
+            carritoDto.setPedidos(pedidos);
+            Double total  = 0d;
+            for (PedidoDtoCarrito p: pedidos)
+                total += p.subTotal();
+            carritoDto.setPrecioTotal(total);
+            carritosDto.add(carritoDto);
+        });
         return carritosDto;
     }
 
@@ -62,9 +75,16 @@ public class CarritoServicio implements ICarritoServicio{
         CarritoDto carritoDto = null;
         Optional<Carrito> carritoOptional = carritoRepositorio.findById(id);
         if(carritoOptional.isPresent()) {
+            Carrito carrito = carritoOptional.get();
             ModelMapper mapper = new ModelMapper();
-            carritoDto = mapper.map(carritoOptional.get(), CarritoDto.class);
+            List<PedidoDtoCarrito> pedidos = pedidoServicio.listarPorCarrito(carrito);
+            Double total  = 0d;
+            carritoDto = mapper.map(carrito, CarritoDto.class);
             resp.setMensaje("El carrito ha sido obtenido");
+            carritoDto.setPedidos(pedidos);
+            for (PedidoDtoCarrito p: pedidos)
+                total += p.subTotal();
+            carritoDto.setPrecioTotal(total);
         }
         else {
             resp.setMensaje(String.format("El carrito con el id %d no se encuentra", id));

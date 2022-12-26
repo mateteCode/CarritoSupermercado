@@ -11,18 +11,23 @@ import lombok.*;
 public class Producto {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ID")
     private Long id;
 
-    @Column(name="NOMBRE", nullable = false, length = 100)
+    //@Column(nullable = false, unique = true)
+    //private String codigo;
+
+    @Column(nullable = false, length = 100)
     private String nombre;
 
-    @Column(name="DESCRIPCION")
     private String descripcion;
 
-    @Column(name="PRECIO", nullable = false, scale = 2)
+    //private Integer stock;
+
+    @Column(nullable = false, scale = 2)
     private Double precio;
+
     private String foto;
+
     private Integer peso;
 
     //@ManyToOne(optional = false, cascade = CascadeType.ALL, fetch = FetchType.EAGER)

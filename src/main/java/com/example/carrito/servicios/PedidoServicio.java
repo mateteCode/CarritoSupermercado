@@ -1,7 +1,9 @@
 package com.example.carrito.servicios;
 
 import com.example.carrito.dto.PedidoDto;
+import com.example.carrito.dto.PedidoDtoCarrito;
 import com.example.carrito.dto.RespPedidoDto;
+import com.example.carrito.entidades.Carrito;
 import com.example.carrito.entidades.Pedido;
 import com.example.carrito.repositorios.IPedidoRepositorio;
 import org.modelmapper.ModelMapper;
@@ -71,5 +73,14 @@ public class PedidoServicio implements IPedidoServicio{
         }
         resp.setPedido(pedidoDto);
         return resp;
+    }
+
+    @Override
+    public List<PedidoDtoCarrito> listarPorCarrito(Carrito carrito) {
+        ModelMapper mapper = new ModelMapper();
+        List<Pedido> pedidos = pedidoRepositorio.findAllByCarrito(carrito);
+        List<PedidoDtoCarrito> pedidosDtoCarrito = new ArrayList<>();
+        pedidos.stream().forEach(c-> pedidosDtoCarrito.add(mapper.map(c, PedidoDtoCarrito.class)));
+        return pedidosDtoCarrito;
     }
 }
